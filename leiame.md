@@ -18,6 +18,7 @@ CONCEITOS DE PROGRAMAÇÃO ORIENTADA A OBJETOS UTILIZADOS:
   Várias variáveis dentro do projeto são encapsuladas e somente acessada por métodos públicos, especialmente se forem características de um construtor.
 * Polimorfismo
  <img width="603" height="635" alt="image" src="https://github.com/user-attachments/assets/9d0462ff-a9f3-43a1-a752-7c5dba8a54b9" />
+
   A classe Usuário herda de Cadastro várias variáveis e métodos, incluindo o exibirDados().
 * Cadastro, listagem e consulta de dados
   Você pode se cadastrar, os produtos são listados e você pode consultar os dados
