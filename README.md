@@ -6,6 +6,7 @@ O método de navegação e interface de usuário é feito baseado no input de n�
 
 CONCEITOS DE PROGRAMAÇÃO ORIENTADA A OBJETOS UTILIZADOS:
 * Classes:
+
   Meu projeto possui 5 classes (não contando a classe Main), incluindo
   - Cadastro (Lida com o cadastro inicial);
   - Usuário (Lida com o cadastro secundário para venda de produtos);
@@ -13,14 +14,17 @@ CONCEITOS DE PROGRAMAÇÃO ORIENTADA A OBJETOS UTILIZADOS:
   - Carrinho (Lida com o sistema de carrinho) e;
   - Sistema (Lida com todo o sistema principal e interface de usuário do programa)
 * Criação de Objetos:
+
   Meu projeto usa vários objetos e arrays diferentes para funcionar, especialmente na parte de usuários e produtos. O programa guarda eles em ArrayLists para a facilidade da criação dos mesmos para quem está mexendo no código
 * Encapsulamento
+
   Várias variáveis dentro do projeto são encapsuladas e somente acessada por métodos públicos, especialmente se forem características de um construtor.
 * Polimorfismo
  <img width="301" height="317" alt="image" src="https://github.com/user-attachments/assets/9d0462ff-a9f3-43a1-a752-7c5dba8a54b9" />
 
   A classe Usuário herda de Cadastro várias variáveis e métodos, incluindo o exibirDados().
 * Cadastro, listagem e consulta de dados
+
   Você pode se cadastrar, os produtos são listados e você pode consultar os dados
   - Dos usuários;
   - Dos produtos e;
