@@ -26,5 +26,6 @@ CONCEITOS DE PROGRAMAÇÃO ORIENTADA A OBJETOS UTILIZADOS:
   - Dos produtos e;
   - Do seu carrinho.
 * Organização do código
+
   O código tem, em sua boa parte, vários comentários explicando o que cada coisa no código faz para diminuir a confusão de quem decidir abrir o código fonte.
 
