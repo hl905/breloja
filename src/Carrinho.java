@@ -3,7 +3,6 @@ import java.util.ArrayList;
 public class Carrinho {
     public static ArrayList<Produto> meuCarrinho = new ArrayList<>();
     private static double preçoTotal;
-    private int instanciaProduto;
 
     public static void adicionarProduto(Produto produto){
         meuCarrinho.add(produto);

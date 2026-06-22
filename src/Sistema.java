@@ -1,8 +1,9 @@
 import java.util.Scanner;
 
+
 public class Sistema {
-    public  static Cadastro mainC = new Cadastro("***", "000.000.000-00", "email@mail.com", "*******");
-    public  static Usuário mainU = new Usuário(mainC, "***", "ES", "cidade", false);
+    public  static Cadastro mainC = new Cadastro(null, null, null, null);
+    public  static Usuário mainU = new Usuário(mainC, null, null, null, false);
     public  static Scanner sc = new Scanner(System.in);
     public  static boolean login = false;
     // Variáveis de resposta
@@ -22,19 +23,20 @@ public class Sistema {
 
 
     public static void Inicializar(){
+        Usuário.cadastroCompleto = false;
         Usuário.criarUsuários();
         Produto.criarLoja();
         menuPrincipal();
     }
-    public static void Logo(){
-    System.out.println(" _              _           _       ");
-    System.out.println("| |            | |         (_)      ");
-    System.out.println("| |__  _ __ ___| |     ___  _  __ _ ");
-    System.out.println("| '_ \\| '__/ _ \\ |    / _ \\| |/ _` |");
-    System.out.println("| |_) | | |  __/ |___| (_) | | (_| |");
-    System.out.println("|_.__/|_|  \\___|______\\___/| |\\__,_|");
-    System.out.println("                          _/ |      ");
-    System.out.println("                         |__/     ");
+    private static void Logo(){
+        System.out.println(" _              _           _       ");
+        System.out.println("| |            | |         (_)      ");
+        System.out.println("| |__  _ __ ___| |     ___  _  __ _ ");
+        System.out.println("| '_ \\| '__/ _ \\ |    / _ \\| |/ _` |");
+        System.out.println("| |_) | | |  __/ |___| (_) | | (_| |");
+        System.out.println("|_.__/|_|  \\___|______\\___/| |\\__,_|");
+        System.out.println("                          _/ |      ");
+        System.out.println("                         |__/     ");
     }
     public static void Divisão(int tamanho){ // Divide sessões do sistema quando for necessário
         if (tamanho == 0){
@@ -44,12 +46,12 @@ public class Sistema {
             System.out.println("=================================");
         }
     }
-    public static void resetarResposta(){ // Reseta resposta
+    private static void resetarResposta(){ // Reseta resposta
         sc.nextLine();
         resposta = 0;
         respostaValida = false;
     }
-    public static void exibirMeuPerfil(boolean set){
+    private static void exibirMeuPerfil(boolean set){
         if(set == true){
         mainU.meuPerfil = true; mainC.meuPerfil = true;
         }else{
@@ -59,10 +61,16 @@ public class Sistema {
 
     // ============================= Sessão de menus =============================
     // * * * Menu principal * * *
-    public static void menuPrincipal(){
+    private static void menuPrincipal(){
         Logo();
         if (login == true){
-            System.out.println("\nSeja bem-vindo(a), "+mainC.getNome()+"!");
+            System.out.println(Usuário.cadastroCompleto);
+            if(Usuário.cadastroCompleto == false){
+                System.out.println("\nSeja bem-vindo(a), "+mainC.getNome()+"!");
+            }else{
+                System.out.println("\nSeja bem-vindo(a), "+mainU.getNomePublico()+"!");
+                Usuário.cadastroCompleto = true;
+            }
             resetarResposta();
             while(respostaValida == false){
             System.out.println("O que você deseja fazer?");
@@ -75,7 +83,7 @@ public class Sistema {
             switch(resposta){
             case 1: menuCompras(); respostaValida = true; break;
             case 2: adicionarProduto(); respostaValida = true; break;
-            case 3:
+            case 3: meuPerfil(); respostaValida = true; break;
             case 4: System.out.println("Fechando programa..."); System.exit(0);
             default: System.out.println("Resposta inválida."); break;
             }
@@ -91,6 +99,7 @@ public class Sistema {
             resposta = sc.nextInt();
             switch(resposta){
             case 1: fazerCadastro(); respostaValida = true; break;
+            case 2: fazerLogin(); respostaValida = true; break;
             case 3: System.out.println("Fechando programa..."); System.exit(0);
             default: System.out.println("Resposta inválida."); break;
             }
@@ -98,26 +107,26 @@ public class Sistema {
         }
     }
     // * * * Menu de cadastro * * *
-    public static void fazerCadastro(){
+    private static void fazerCadastro(){
         // Cadastro inicial
         mudarNome(n, false);
         mudarCPF(c, false);
         mudarEmail(e, false);
         mudarSenha(s, false);
 
+        // Mudar cadastro antes de confirmar
+        while(respostaValida == false){
         Divisão(1);
         mainC.exibirDados();
         Divisão(1);
-        // Mudar cadastro antes de confirmar
-        while(respostaValida == false){
+
         System.out.println("Você deseja mudar alguma informação?");
         System.out.println("1. Sim");
         System.out.println("2. Não");
         resposta = sc.nextInt();
         switch (resposta){
             case 1:
-                resposta = 0;
-                mudarCadastro(resposta);
+                mudarCadastro();
                 break;
             case 2: System.out.println("Cadastro concluído com sucesso!"); respostaValida = true; break;
             default: System.out.println("Resposta inválida."); break;
@@ -129,65 +138,160 @@ public class Sistema {
         menuPrincipal();
     }
     // * * * Meu Perfil * * *
-    public static void meuPerfil(){
+    private static void meuPerfil(){
         exibirMeuPerfil(true);
         if(Usuário.cadastroCompleto == true){
             mainU.exibirDados();
         }else{
             mainC.exibirDados();
         }
+
         resetarResposta();
-        while(respostaValida == false){
         System.out.println("Você gostaria de mudar alguma coisa?");
-        System.out.println("1. Sim");
-        System.out.println("2. Não");
-        
+        while(respostaValida == false){
+        System.out.println("1. Sim\n2. Não");
+        resposta = sc.nextInt();
+        switch(resposta){
+            case 1: // Não tem respostaValida = true aqui para caso o usuário queira mudar mais coisas e para o programa não terminar repentinamente
+                mudarCadastro();
+                System.out.println("Você gostaria de mudar mais alguma coisa?"); // Caso o usuário queira mudar mais alguma coisa
+                break;
+            case 2:
+                System.out.println("Você será redirecionado ao menu principal novamente...");
+                menuPrincipal();
+                respostaValida = true;
+                break;
+            default: System.out.println("Resposta inválida.");
+        }
         }
     }
 
     // !! Métodos para mudar cadastro !!
-    public static void mudarCadastro(int resposta){
-        if(!Usuário.cadastroCompleto){
-        System.out.println("\nQual informação você deseja mudar?");
-        System.out.println("1. Nome\n2. CPF\n3. E-mail\n4. Senha\n5. Mudei de ideia");
-        Divisão(0);
-        resposta = sc.nextInt();
-        switch (resposta){
-            case 1:  mudarNome(n, false); break;
-            case 2:   mudarCPF(c, false); break;
-            case 3: mudarEmail(e, false); break;
-            case 4: mudarSenha(s, false); break;
-            default: System.out.println("Resposta inválida.");
-        } // fim do switch case
-        }else{
-
+    private static void mudarCadastro(){
+        if(!Usuário.cadastroCompleto){ // cadastroCompleto = false
+            System.out.println("\nQual informação você deseja mudar?");
+            System.out.println("1. Nome\n2. CPF\n3. E-mail\n4. Senha\n5. Mudei de ideia");
+            Divisão(0);
+            resposta = sc.nextInt();
+            switch (resposta){ 
+                case 1:  mudarNome(n, false); break;
+                case 2:   mudarCPF(c, false); break;
+                case 3: mudarEmail(e, false); break;
+                case 4: mudarSenha(s, false); break;
+                case 5:
+                System.out.println("Você será redirecionado ao menu principal...");
+                menuPrincipal(); break;
+                default: System.out.println("Resposta inválida.");
+            }
+        }else{ // cadastroCompleto = true
+            System.out.println("\nQual informação você deseja mudar?");
+            System.out.println("1. Nome\n2. CPF\n3. E-mail\n4. Senha\n5. Nome Público\n6. Estado\n7. Cidade\n8. Opção de contato\n9. Mudei de ideia");
+            Divisão(0);
+            resposta = sc.nextInt();
+            switch (resposta){
+                case 1:  
+                    mudarNome(n, true); 
+                    System.out.println("Nome alterado com sucesso.");
+                break;
+                case 2:   
+                    mudarCPF(c, true); 
+                    System.out.println("CPF alterado com sucesso.");
+                    break;
+                case 3: 
+                    mudarEmail(e, true); 
+                    System.out.println("E-mail alterado com sucesso.");
+                    break;
+                case 4: 
+                    mudarSenha(s, true);
+                    System.out.println("Senha alterada com sucesso.");
+                    break;
+                case 5: 
+                    mudarNomePublico(np);
+                    System.out.println("O seu nome público agora é "+mainU.getNomePublico()+".");
+                    break;
+                case 6:
+                    System.out.println("Lembre-se: Ao mudar seu estado, você terá de obrigatoriamente mudar sua cidade.");
+                    mudarEstado(es); 
+                    System.out.println("Estado e cidade alterados com sucesso.");
+                    break;
+                case 7: 
+                    mudarCidade(cd);
+                    System.out.println("Cidade alterada com sucesso.");
+                    break;
+                case 8: 
+                    mudarContato(co);
+                    if(mainU.getContato() == true){
+                        System.out.println("Agora usuários podem te contatar diretamente pelo seu E-mail.");
+                    }else{
+                        System.out.println("Usuários não podem te contatar mais pelo seu E-mail.");
+                    }
+                    break;
+                case 9:
+                System.out.println("Você será redirecionado ao menu principal...");
+                menuPrincipal(); break;
+                default: System.out.println("Resposta inválida.");
+            }
         }
     }
     private static void mudarNome(String n, boolean cadastroCompleto){ // Nome
-        do{ System.out.println("Digite seu nome:");
-        sc.nextLine(); // Buffer
-        n = sc.nextLine();
-        }while(!mainC.setNome(n));
-        mainC.setNome(n);
+        if(cadastroCompleto == false){
+            do{ // MainC
+            System.out.println("Digite seu nome:");
+            sc.nextLine(); // Buffer
+            n = sc.nextLine();
+            }while(!mainC.setNome(n));
+            mainC.setNome(n);
+        }else{ // MainU
+            do{
+            System.out.println("Digite seu nome:");
+            sc.nextLine(); // Buffer
+            n = sc.nextLine();
+            }while(!mainU.setNome(n));
+            mainU.setNome(n);
+        }
+        
     }
+    // Pré cadastro inicial
     private static void mudarCPF(String c, boolean cadastroCompleto){ // CPF
-        do{ System.out.println("Digite seu CPF (Somente números):");
-        c = sc.nextLine();
-        }while(!mainC.setCPF(c));
-        mainC.setCPF(c);
+        if(cadastroCompleto == false){ // MainC
+            do{ System.out.println("Digite seu CPF (Somente números):");
+            c = sc.nextLine();
+            }while(!mainC.setCPF(c));
+            mainC.setCPF(c);
+        }else{ // MainU
+            do{ System.out.println("Digite seu CPF (Somente números):");
+            c = sc.nextLine();
+            }while(!mainU.setCPF(c));
+            mainU.setCPF(c);
+        }
     }
     private static void mudarEmail(String e, boolean cadastroCompleto){ // Email
-        do{ System.out.println("Digite seu E-mail:");
-        e = sc.nextLine();
-        }while(!mainC.setEmail(e));
-        mainC.setEmail(e);
+        if(cadastroCompleto == false){ // MainC
+            do{ System.out.println("Digite seu E-mail:");
+            e = sc.nextLine();
+            }while(!mainC.setEmail(e));
+            mainC.setEmail(e);
+        }else{ // MainU
+            do{ System.out.println("Digite seu CPF (Somente números):");
+            c = sc.nextLine();
+            }while(!mainU.setCPF(c));
+            mainU.setCPF(c);
+        }
     }
     private static void mudarSenha(String s, boolean cadastroCompleto){ // Senha
-        do{ System.out.println("Digite sua senha (Ela deve ter 8 ou mais caractéres):");
-        s = sc.nextLine();
-        }while(!mainC.setSenha(s));
-        mainC.setSenha(s);
+        if(cadastroCompleto == false){ // MainC
+            do{ System.out.println("Digite sua senha (Ela deve ter 8 ou mais caractéres):");
+            s = sc.nextLine();
+            }while(!mainC.setSenha(s));
+            mainC.setSenha(s);
+        }else{ // MainU
+            do{ System.out.println("Digite sua senha (Ela deve ter 8 ou mais caractéres):");
+            s = sc.nextLine();
+            }while(!mainC.setSenha(s));
+            mainC.setSenha(s);
+        }
     }
+    // Pós cadastro inicial
     private static void mudarNomePublico(String np){ // Nome público
         do{ System.out.println("Digite seu nome público.");
         sc.nextLine(); // Buffer
@@ -210,7 +314,7 @@ public class Sistema {
     private static void mudarContato(boolean co){ // Ativar ou desativar e-mail visível
         do{
         System.out.println("Você gostaria de deixar seu contato disponível para interessados no produto?");
-        System.out.println("1. Sim\n2.Não");
+        System.out.println("1. Sim\n2. Não");
         resposta = sc.nextInt();
         switch(resposta){
             case 1:
@@ -226,15 +330,167 @@ public class Sistema {
         }
         }while(respostaValida == false);
     }
+    // * * * Fazer Login * * *
+    private static void fazerLogin(){
+        // Booleanas pros while
+        boolean loginConfirmado = false; // While principal
+        // Login e senha pedidos pelo sistema
+        String eLogin;
+        String sLogin;
+        // Objetos de usuário e cadastro
+        Usuário  usuárioLogin  = null;
+        Cadastro cadastroLogin = null;
 
+        resetarResposta();
+        while(loginConfirmado == false){
+        boolean  usuárioEncontrado  = false;
+        boolean  cadastroEncontrado = false;
+
+        // Passo 1: Pede as cretenciais.
+        System.out.println("Digite seu E-mail.");
+        eLogin = sc.nextLine();
+        System.out.println("Digite sua senha.");
+        sLogin = sc.nextLine();
+        // Passo 2: Procura na lista de usuários de o usuário é um usuário (ou cadastro pendente) válido.
+        for(int i = 0; i < Usuário.Usuários.size(); i++){ // Usuário
+            Usuário usuárioAtual = Usuário.Usuários.get(i);
+            if(usuárioAtual.getEmail().equals(eLogin) && usuárioAtual.getSenha().equals(sLogin)){
+                usuárioLogin = usuárioAtual;
+                usuárioEncontrado = true;
+                break;
+            }else continue;
+        }
+        for(int i = 0; i < Usuário.Cadastrados.size(); i++){ // Cadastro
+            Cadastro cadastroAtual = Usuário.Cadastrados.get(i);
+            if(cadastroAtual.getEmail().equals(eLogin) && cadastroAtual.getSenha().equals(sLogin)){
+                cadastroLogin = cadastroAtual;
+                cadastroEncontrado = true;
+                break;
+            }else continue;
+        }
+        // Passo 3: Confirma se você quer logar com este usuário, e pergunta se você gostaria de terminar o cadastro, caso você não tenha terminado tudo.
+        if(usuárioEncontrado == true){ // Usuário
+            resetarResposta();
+            while(respostaValida == false){
+                System.out.println("Você irá fazer login como o usuário "+ usuárioLogin.getNomePublico() +", você confirma que este é você?");
+                System.out.println("1. Sim\n2. Não");
+                resposta = sc.nextInt();
+                switch(resposta){
+                    case 1: // loginConfirmado = true
+                        loginUsuário(usuárioLogin); // mainU = usuárioLogin
+                        System.out.println("Você fez login com sucesso!");
+                        Usuário.cadastroCompleto = true;
+                        loginConfirmado = true; // Variável local
+                        login = true; // Redireciona para a tela de logado
+                        Divisão(1);
+                        menuPrincipal();
+                        respostaValida = true;
+                        break;
+                    case 2:
+                        System.out.println("Por favor, coloque as cretenciais corretamente.");
+                        usuárioEncontrado = false;
+                        respostaValida = true;
+                        break;
+                    default: 
+                        System.out.println("Resposta inválida.");
+                        break;
+                }
+            }
+        }else if(cadastroEncontrado == true){ // Cadastro
+            resetarResposta();
+            while(respostaValida == false){
+                System.out.println("Você irá fazer login como o usuário "+ censurarNome(cadastroLogin.getNome()) +", você confirma que este é você?");
+                System.out.println("(Estamos censurando o nome por questão de segurança.)");
+                System.out.println("1. Sim\n2. Não");
+                resposta = sc.nextInt();
+                switch(resposta){
+                    case 1: // loginConfirmado = true
+                        loginCadastro(cadastroLogin); // mainC = cadastroLogin
+                        System.out.println("Você fez login com sucesso!");
+                        loginConfirmado = true; // Variável local
+                        login = true; // Redireciona para a tela de logado
+                        Divisão(0);
+                        loginConfirmarCadastro();
+                        respostaValida = true;
+                        break;
+                    case 2:
+                        System.out.println("Por favor, coloque as cretenciais corretamente.");
+                        cadastroEncontrado = false;
+                        respostaValida = true;
+                        break;
+                    default: 
+                        System.out.println("Resposta inválida.");
+                        break;
+                }
+            }
+        }else{
+            System.out.println("Uma ou mais credenciais que você colocou são inválidas. Tente novamente.");
+        }
+        } // fim do while
+    }
+
+    private static void loginConfirmarCadastro(){
+        resetarResposta();
+        while(respostaValida == false){
+            System.out.println("Notamos que você ainda não terminou o seu cadastro. Você pode está perdendo a oportunidade de vender seu produto na breLoja sem o seu cadastro completo.");
+            System.out.println("Você gostaria de terminar o seu cadastro?");
+            System.out.println("1. Sim\n2. Não");
+            resposta = sc.nextInt();
+            switch(resposta){
+                case 1: completarCadastro(); respostaValida = true; break;
+                case 2: 
+                    System.out.println("Você será redirecionado a loja normalmente...");
+                    respostaValida = true;
+                    break;
+                default: System.out.println("Resposta inválida."); break;
+            }
+        }
+    }
+
+    private static void loginUsuário(Usuário usuário){
+        mainU.setNome(usuário.getNome());
+        mainU.setCPF(usuário.getCPF());
+        mainU.setEmail(usuário.getEmail());
+        mainU.setSenha(usuário.getSenha());
+        mainU.setNomePublico(usuário.getNomePublico());
+        mainU.setEstado(usuário.getEstado());
+        mainU.setCidade(usuário.getCidade());
+        mainU.setContato(usuário.getContato());
+
+        mainC.setNome(usuário.getNome());
+        mainC.setCPF(usuário.getCPF());
+        mainC.setEmail(usuário.getEmail());
+        mainC.setSenha(usuário.getSenha());
+
+        Usuário.cadastroCompleto = true;
+        Produto.meusProdutosAtualizar(); // Pega os produtos do usuário logado
+    }
+
+    private static void loginCadastro(Cadastro cadastro){
+        mainC.setNome(cadastro.getNome());
+        mainC.setCPF(cadastro.getCPF());
+        mainC.setEmail(cadastro.getEmail());
+        mainC.setSenha(cadastro.getSenha());
+    }
+
+    private static String censurarNome(String nome){
+        String[] nomeSeparado = nome.split(" "); // Separa o nome em uma string
+
+        int ultimoIndex = nomeSeparado.length-1; // Pega o último index
+        String ultimoNome = nomeSeparado[ultimoIndex].charAt(0) + "."; // Pega apenas a primeira letra e coloca um ponto
+        String nomeCensurado = nomeSeparado[0] + " " + ultimoNome;
+
+        return nomeCensurado; // Retorna o nome censurado
+
+    }
 
 
     // * * * Menu de compras * * *
-    public static void menuCompras(){
+    private static void menuCompras(){
         resetarResposta();
         mostrarProdutos();
     }
-    public static void mostrarProdutos(){
+    private static void mostrarProdutos(){
         System.out.println("===== PRODUTOS DISPONÍVEIS =====");
         Produto.listarProdutos();
         Divisão(1);
@@ -271,7 +527,19 @@ public class Sistema {
             respostaValida = true;
             adicionarProduto();
             break;
-            case 5:
+            case 5: // Ver seus produtos na loja
+            if(Usuário.cadastroCompleto == false){ // Verifica se você terminou o cadastro
+                respostaValida = true;
+                completarCadastroPergunta();
+            }else{
+                if(Produto.meusProdutos.size() != 0){ // Vê se você tem algum produto
+                respostaValida = true;
+                meusProdutos();
+                }else{
+                    System.out.println("Você não possui nenhum produto na loja.");
+                }
+            }
+            break;
             case 6: // Volta ao menu principal
             respostaValida = true;
             menuPrincipal();
@@ -281,7 +549,7 @@ public class Sistema {
         
     }
     // Coisas relacionadas a compra de produtos
-    public static void escolherProdutoVer(){ // PRODUTOS DISPONÍVEIS = > 1. Checar um produto
+    private static void escolherProdutoVer(){ // PRODUTOS DISPONÍVEIS = > 1. Checar um produto
         resetarResposta();   
         while(respostaValida == false){
             System.out.println("Escolha qual produto da lista você gostaria de checar. (Somente número)");
@@ -299,10 +567,10 @@ public class Sistema {
         Divisão(1);
         resetarResposta();
     }
-    public static void escolherProdutoComprar(){
+    private static void escolherProdutoComprar(){ // PRODUTOS DISPONÍVEIS => 2. Adicionar ao carrinho
         resetarResposta();
         while(respostaValida == false){
-            System.out.println("Escolha qual produto da lista você gostaria de checar. (Somente número)");
+            System.out.println("Escolha qual produto da lista você gostaria adicionar ao carrinho. (Somente número)");
             resposta = sc.nextInt();
             resposta = resposta-1; indexP = resposta;
             if (resposta >= 0 && resposta <= Produto.Produtos.size()){
@@ -315,7 +583,7 @@ public class Sistema {
         resetarResposta();
         }
     }
-    public static void itemSelecionado(int indexP){ // Item que o usuário decidiu selecionar em escolherProduto()
+    private static void itemSelecionado(int indexP){ // Item que o usuário decidiu selecionar no escolherProdutoVer()
         Produto produtoAtual = Produto.Produtos.get(indexP);
         Usuário usuárioProduto = produtoAtual.getUsuário();
         while(respostaValida == false){
@@ -326,10 +594,16 @@ public class Sistema {
             Divisão(0);
             resposta = sc.nextInt();
             switch(resposta){
-            case 1: // 1. Adicionar ao carrinho
-            respostaValida = true;
-            carrinhoUnidades();
-            break;
+            case 1: // 1. Adicionar ao carrinho      
+            if(usuárioProduto.getNome() != mainU.getNome()){ // usuárioProduto != mainU
+                respostaValida = true;
+                carrinhoUnidades();
+                break;
+            }else{
+                System.out.println("Você não pode comprar um produto de si mesmo.");
+                Divisão(0);
+                break;
+            }
             case 2: // 2. Checar vendedor
             usuárioProduto.exibirDados();
             Divisão(1);
@@ -343,7 +617,7 @@ public class Sistema {
         }
     }
     // ! ! ! Sistema de carrinho ! ! !
-    public static void carrinhoUnidades(){ // O programa adiciona quantidade de unidades que o usuário quer adicionar no carrinho
+    private static void carrinhoUnidades(){ // O programa adiciona quantidade de unidades que o usuário quer adicionar no carrinho
         Produto produtoAtual = Produto.Produtos.get(indexP);
         int unidades;
         int unidadesAtuais = 0;
@@ -362,6 +636,8 @@ public class Sistema {
             unidades = sc.nextInt();
             if(unidades > produtoAtual.getEstoque()){ // Unidades > estoque
                 System.out.println("Você está tentando comprar mais do que pode.");
+                System.out.println("Você será redirecionado a loja novamente...");
+                menuCompras();
             }else if(unidades <= 0){ // Sair
                 System.out.println("Você será redirecionado a loja novamente...");
                 menuCompras();
@@ -378,7 +654,7 @@ public class Sistema {
         }
 
     }
-    public static void carrinhoOpções(){ // PRODUTOS DISPONÍVEL => 3. Ver meu carrinho
+    private static void carrinhoOpções(){ // PRODUTOS DISPONÍVEL => 3. Ver meu carrinho
         resetarResposta();
         while(respostaValida == false){
             System.out.println("O que você deseja fazer no seu carrinho?");
@@ -411,10 +687,11 @@ public class Sistema {
             respostaValida = true;
             menuCompras();
             break;
+
             } // fim do switch case
         }
     }
-    public static void carrinhoRemover(){
+    private static void carrinhoRemover(){
         resetarResposta();
         while(respostaValida == false){
         System.out.println("Diga qual produto você gostaria de remover do carrinho. (Digite 0 se você quiser voltar ao carrinho sem remover nada.)");
@@ -435,8 +712,8 @@ public class Sistema {
     }
     
     // Adicionar produtos a loja + terminar cadastro
-    public static void adicionarProduto(){
-        if(!Usuário.cadastroCompleto){ // Te redireciona a região para concluir cadastro
+    private static void adicionarProduto(){ // PRODUTOS DISPONÍVEIS => 4. Adicionar produto a loja
+        if(Usuário.cadastroCompleto == false){ // Te redireciona a região para concluir cadastro
             completarCadastroPergunta();
         }else{ // Criar produto
             String item;
@@ -457,11 +734,209 @@ public class Sistema {
 
             System.out.println("Seu item será adicionado a loja.");
             Produto.Produtos.add(new Produto(item, preço, estoque, descrição, mainU));
+            int index = Produto.Produtos.size() - 1; // Último item da lista de produtos
+            Produto produtoAtual = Produto.Produtos.get(index);
+            Produto.meusProdutos.add(produtoAtual);
             Divisão(1);
             menuCompras();
         }
     }
-    public static void completarCadastroPergunta(){
+    private static void meusProdutos(){ // PRODUTOS DISPONÍVEIS => 5. Ver meus produtos
+        resetarResposta();
+        if(Usuário.cadastroCompleto == true){
+            if(Produto.meusProdutos.size() != 0){ // Ver se não está vazio            
+            Produto.meusProdutosMostrar();
+            while(respostaValida == false){
+                System.out.println("O que você gostaria de fazer?");
+                System.out.println("1. Ver um produto"); // Ver classe itemSelecionado() e escolherProdutoVer() se possível como referencia
+                System.out.println("2. Alterar um produto");
+                System.out.println("3. Remover um produto");
+                System.out.println("4. Remover todos os meus produtos");
+                System.out.println("5. Voltar");
+                resposta = sc.nextInt();
+                switch(resposta){
+                    case 1: // 1. Ver um produto
+                    if(Produto.meusProdutos.size() != 0){
+                        verMeuProduto();
+                        respostaValida = true;
+                        break;
+                    }else{
+                        System.out.println("Você não tem nenhum produto para realizar essa ação.");
+                        break;
+                    }
+                    case 2: // 2. Alterar um produto
+                    if(Produto.meusProdutos.size() != 0){
+                        alterarMeuProdutoEscolher();
+                    }else{
+                        System.out.println("Você não tem nenhum produto para realizar essa ação.");
+                        break;
+                    }
+                    case 3: // 3. Remover um produto
+                    if(Produto.meusProdutos.size() != 0){
+                        removerMeuProduto();
+                    }else{
+                        System.out.println("Você não tem nenhum produto para realizar essa ação.");
+                        break;
+                    }
+                    case 4: // 4. Remover todos os meus produtos
+                    if(Produto.meusProdutos.size() != 0){
+                        limparProdutos();
+                    }else{
+                        System.out.println("Você não tem nenhum produto para realizar essa ação.");
+                        break;
+                    }
+                    case 5: 
+                        System.out.println("Você será redirecionado a loja novamente...");
+                        menuCompras();
+                        break;
+                    default: System.out.println("Resposta inválida.");
+                }
+            }
+            }else{ // Se estiver vazio...
+                System.out.println("Você não adicionou nenhum produto a loja.");
+                System.out.println("Você será redirecionado a loja novamente...");
+                menuCompras();
+            }
+        }else{completarCadastroPergunta();}
+    }
+    private static void verMeuProduto(){ // 5. Ver meus produtos => 1. Ver um produto
+        resetarResposta();
+        System.out.println("Escolha qual produto você gostaria de ver. Digite 0 caso você tenha mudado de ideia.");
+        while(respostaValida == false || resposta != 0){
+            resposta = sc.nextInt();
+            if(resposta != 0){            
+                indexP = resposta-1;
+                if(indexP > Produto.meusProdutos.size() || indexP < 0){ // evitar OutOfBounds
+                    System.out.println("O número que você escolheu não está na lista. Reveja a lista e tente novamente.");
+                }else{
+                    Produto.meusProdutos.get(indexP).exibirProduto();
+                    Divisão(1);
+                    System.out.println("Clique Enter para sair.");
+                    sc.nextLine();
+                    meusProdutos();
+                    respostaValida = true;
+                }
+            }else{
+                System.out.println("Você será redirecionado ao menu novamente...");
+                meusProdutos();
+            }
+        } // fim do while
+    }
+    private static void alterarMeuProdutoEscolher(){ // 5. Ver meus produto => 2. Alterar um produto
+        resetarResposta();
+        System.out.println("Escolha qual produto você gostaria de alterar. Digite 0 caso você tenha mudado de ideia.");
+        while(respostaValida == false || resposta != 0){
+            resposta = sc.nextInt();
+            if(resposta != 0){            
+                indexP = resposta-1;
+                if(indexP > Produto.meusProdutos.size() || indexP < 0){ // evitar OutOfBounds
+                    System.out.println("O número que você escolheu não está na lista. Reveja a lista e tente novamente.");
+                }else{
+                    System.out.println("Observação: Você pode manter as mesmas cretenciais simplesmente apertando Enter.");
+                    alterarMeuProduto(indexP);
+                }
+            }else{
+                System.out.println("Você será redirecionado ao menu novamente...");
+                meusProdutos();
+            }
+        } // fim do while
+    }
+    private static void alterarMeuProduto(int index){ // Ação de alterar produto em si
+        Produto produtoAtual = Produto.meusProdutos.get(index);
+        String item;
+        double preço;
+        int estoque;
+        String descrição;
+
+        resetarResposta();
+        while(respostaValida == false){
+            // Parte de editar as cretenciais
+            System.out.println("Qual vai ser o nome do seu produto?");
+            sc.nextLine(); // buffer
+            item = sc.nextLine();
+            if(item == null) item = produtoAtual.getItem();
+            System.out.println("Qual vai ser o preço?");
+            preço = sc.nextDouble();
+            if(String.valueOf(preço) == null) preço = produtoAtual.getPreço();
+            System.out.println("Você quer quanto desse item em estoque?");
+            estoque = sc.nextInt();
+            if(String.valueOf(estoque) == null) estoque = produtoAtual.getEstoque();
+            System.out.println("Dê uma descrição ao seu item.");
+            sc.nextLine(); // buffer
+            descrição = sc.nextLine();
+            if(descrição == null) descrição = produtoAtual.getDescrição();
+
+            produtoAtual.exibirProduto();
+            Divisão(1);
+            System.out.println("Você está satisfeito com as mudanças atuais?");
+            System.out.println("1. Sim\n2. Não");
+            resposta = sc.nextInt();
+            switch(resposta){
+                case 1:
+                    System.out.println("Seu item foi alterado com sucesso.");
+                    Produto.Produtos.get(index).setItem(item);
+                    Produto.Produtos.get(index).setPreço(preço);
+                    Produto.Produtos.get(index).setEstoque(estoque);
+                    Produto.Produtos.get(index).setDescrição(descrição);
+                    respostaValida = true;
+                    meusProdutos();
+                    break;
+                case 2:
+                    System.out.println("Você terá de repetir todas as perguntas novamente.");
+                    break;
+                default: System.out.println("Resposta inválida."); break;
+            } // fim do switch case
+        } // fim do while
+    }
+    private static void removerMeuProduto(){ // 5. Ver meus produtos => 3. Remover um produto
+        resetarResposta();
+        System.out.println("Escolha qual produto você gostaria de remover. Digite 0 caso você tenha mudado de ideia.");
+        while(respostaValida == false || resposta != 0){
+            resposta = sc.nextInt();
+            if(resposta != 0){            
+                indexP = resposta-1;
+                if(indexP > Produto.meusProdutos.size() || indexP < 0){ // evitar OutOfBounds
+                    System.out.println("O número que você escolheu não está na lista. Reveja a lista e tente novamente.");
+                }else{
+                    System.out.println("O seu produto foi removido com sucesso.");
+                    // Remove de ambos os arrays
+                    Produto.meusProdutos.remove(indexP);
+                    Produto.Produtos.remove(indexP);
+                    menuCompras();
+                    respostaValida = true;
+                }
+            }else{
+                System.out.println("Você será redirecionado ao menu novamente...");
+                meusProdutos();
+            }
+        }
+    }
+
+    private static void limparProdutos(){ // 5. Ver meus produtos => 4. Remover todos os meus produtos
+        resetarResposta();
+        while(respostaValida == false){
+            System.out.println("Você deseja realmente remover todos os seus produtos? Essa ação é irreversível.");
+            System.out.println("1. Sim\n2. Não");
+            resposta = sc.nextInt();
+            switch(resposta){
+            case 1: // Sim
+                Produto.meusProdutos.clear(); // Limpa tudo
+                System.out.println("Seus produtos foram totalmente deletados da nossa loja.");
+                System.out.println("Você será redirecionado a loja novamente...");
+                respostaValida = true;
+                menuCompras();
+                break;
+            case 2: // Não
+                System.out.println("Você será redirecionado ao menu novamente...");
+                respostaValida = true;
+                meusProdutos();
+                break;
+            default: System.out.println("Resposta inválida."); break;
+            }
+        }
+    }
+    // Completar cadastro
+    private static void completarCadastroPergunta(){ // Pergunta antes de seguir com o cadastro completo
         resetarResposta();
         while(respostaValida == false){
             System.out.println("Para ter essa opção, você deve adicionar mais informações a sua conta. Você gostaria de completar seu cadastro?");
@@ -480,7 +955,7 @@ public class Sistema {
             }
         }
     }
-    public static void completarCadastro(){
+    private static void completarCadastro(){
         mudarNomePublico(np);
         mudarEstado(es);
         mudarContato(co);
@@ -488,7 +963,6 @@ public class Sistema {
         System.out.println("Seu cadastro agora está completo! Agora você pode vender itens na loja normalmente!");
         Usuário.cadastroCompleto = true;
         Usuário.Usuários.add(mainU);
-        Divisão(1);
         menuCompras();
     }
 
