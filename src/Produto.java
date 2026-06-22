@@ -1,12 +1,13 @@
 import java.util.ArrayList;
 
 public class Produto{
-    private String item;
+    private String item; // nome do item
     private double preço;
     private int estoque;
     private String descrição;
-    private Usuário usuário;
-    public static ArrayList<Produto> Produtos = new ArrayList<>();
+    private Usuário usuário; // de quem é o produto
+    public static ArrayList<Produto> Produtos = new ArrayList<>(); // todos os produtos dentro da loja
+    public static ArrayList<Produto> meusProdutos = new ArrayList<>(); // somente os produtos do usuário
 
     // Construtor
     public Produto(String item, double preço, int estoque, String descrição, Usuário usuário){
@@ -37,10 +38,10 @@ public class Produto{
         System.out.println("Estoque: "+estoque);
         System.out.println("Descrição do item:\n"+descrição);
     }
-    public void listarItem(int index){
+    public void listarItem(int index){ // Método principal para listar um produto
         System.out.println((index+1)+". "+item+" - R$ "+preço);
     }
-    public static void listarProdutos(){
+    public static void listarProdutos(){ // Listar produtos disponíveis na loja
         for (int i = 0; i < Produtos.size(); i++){
             Produtos.get(i).listarItem(i);
         }
@@ -59,5 +60,28 @@ public class Produto{
                 produtoAtual.listarItem(i);
             }
         }
+    }
+    public static void meusProdutosAtualizar(){ // Atualiza os produtos do usuário caso for necessário
+        meusProdutos.clear();
+        for(int i = 0; i < Produtos.size(); i++){
+            Produto produtoAtual = Produtos.get(i);
+            if(pegarUsuário(produtoAtual) == Sistema.mainU.getNome()){
+                meusProdutos.add(produtoAtual);
+            }
+        }
+    }
+    public static String pegarUsuário(Produto produto){ // Serve para comparar o nome do usuário atual com o nome na lista de produtos 
+            Usuário usuárioId = produto.getUsuário();
+            String usuárioNome = usuárioId.getNome();
+
+            return usuárioNome;
+    }
+    public static void meusProdutosMostrar(){ // Lista os produtos do usuário
+        meusProdutosAtualizar(); // Atualiza os produtos.
+        System.out.println("========= MEUS PRODUTOS =========");
+        for (int i = 0; i < meusProdutos.size(); i++){
+            meusProdutos.get(i).listarItem(i);
+        }
+        Sistema.Divisão(1);
     }
 }

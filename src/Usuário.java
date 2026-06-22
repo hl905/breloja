@@ -6,9 +6,9 @@ public class Usuário extends Cadastro{
     private String cidade;
     private boolean contato;
     public boolean meuPerfil; // serve para o exibirDados
-    public  static boolean cadastroCompleto = false;
-    private static ArrayList<Cadastro> Cadastrados = new ArrayList<>();
-    public  static ArrayList<Usuário> Usuários = new ArrayList<>();
+    public static boolean cadastroCompleto = false;
+    public static ArrayList<Cadastro> Cadastrados = new ArrayList<>();
+    public static ArrayList<Usuário> Usuários = new ArrayList<>();
 
     // Construtor
     public Usuário(Cadastro cadastro, String nomePublico, String estado, String cidade, boolean contato){
@@ -29,6 +29,7 @@ public class Usuário extends Cadastro{
         Cadastrados.add(new Cadastro("Matheus Gomes Monteiro","665.322.679-45","matheusbeyblade@gmail.com","f@%j3&k9b%"));
         Cadastrados.add(new Cadastro("Césio Lobo Castello","749.163.900-32","castellocontato@yahoo.com","F12ARMstrong"));
         Cadastrados.add(new Cadastro("Gabriella Soares da Costa","739.284.165-37","gsc459@gmail.com","dorothy281913%"));
+        Cadastrados.add(new Cadastro("Demonstração Teste", "012.345.678-90", "teste@mail.com", "12345678"));
         Usuários.add(new Usuário(Cadastrados.get(0), "CASTRO929323", "MT", "Cuiabá", true));
         Usuários.add(new Usuário(Cadastrados.get(1), "Desapegos da Laura", "MG", "Montes Claros", false));
         Usuários.add(new Usuário(Cadastrados.get(2), "matt_", "SC", "Florianópolis", false));
@@ -102,10 +103,11 @@ public class Usuário extends Cadastro{
     private boolean estadoValido(String estado){
         if(estado.length() == 2){
             for(int i = 0; i < 2; i++){
-            if (!Character.isLetter(estado.charAt(i))){ // Se o caráctere no index i não for uma letra...
-            System.out.println("Estado inválido. O sistema quer somente a sigla do seu estado.");
-            }
-            } return true; // Se o for loop der tudo certo...
+                if (!Character.isLetter(estado.charAt(i))){ // Se o caráctere no index i não for uma letra...
+                System.out.println("Estado inválido. O sistema quer somente a sigla do seu estado.");
+                }
+            } 
+            return true; // Se o for loop der tudo certo...
         }
         System.out.println("Por favor, coloque apenas a sigla do seu estado, e não o nome completo.");
         return false; // Se o programa perceber que tem menos ou mais de 2 letras

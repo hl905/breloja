@@ -3,7 +3,7 @@ public class Cadastro {
     private String cpf;
     private String email;
     private String senha;
-    public boolean meuPerfil;
+    public boolean meuPerfil; // ver se você está vendo seu próprio perfil ou de outra pessoa
 
     // Construtor
     public Cadastro(String nome, String cpf, String email, String senha){
@@ -116,7 +116,7 @@ public class Cadastro {
         return true;
     }
     // ===================== E-mail ==========================
-    private boolean emailValido(String email) { // Verifica se o E-mail é válido
+    public static boolean emailValido(String email) { // Verifica se o E-mail é válido
         int atLocation = email.indexOf('@');
         if (atLocation <= 0 || atLocation != email.lastIndexOf('@') || atLocation == email.length() - 1) return false;
 
@@ -131,14 +131,14 @@ public class Cadastro {
     // local = "meu.nome"
     // domain = "@mail"
     // extension = ".com.br"
-    private boolean validarLocal(String local) { // Validar o nome do e-mail
+    private static boolean validarLocal(String local) { // Validar o nome do e-mail
         if (local.isEmpty() || local.startsWith(".") || local.endsWith(".") || local.contains("..")) return false;
         for (char c : local.toCharArray()) { 
             if (!Character.isLetterOrDigit(c) && c != '.' && c != '_' && c != '%' && c != '+' && c != '-') return false;
         }
         return true;
     }
-    private boolean validarDominio(String domain) { // Validar o domínio (@mail)
+    private static boolean validarDominio(String domain) { // Validar o domínio (@mail)
         int lastDotLocation = domain.lastIndexOf('.');  // Ver quantos pontos depois do domínio
         if (lastDotLocation <= 0 || domain.contains("..")) return false;
         for (char c : domain.toCharArray()) { 
@@ -147,7 +147,7 @@ public class Cadastro {
         String extension = domain.substring(lastDotLocation + 1); 
         return validarExtensao(extension);
     }
-    private boolean validarExtensao(String extension) { // Validar a extensão (.br)
+    private static boolean validarExtensao(String extension) { // Validar a extensão (.br)
         if (extension.length() < 2) return false;
         for (char c : extension.toCharArray()) { 
             if (!Character.isLetter(c)) return false;
